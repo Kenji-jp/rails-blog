@@ -35,5 +35,5 @@ jobs:
         name: Databasesetup
         command: |
            yarn install --check-files
-           bundle exec rake db:create RAILS_ENV=development
-           bundle exec rake db:schema:load
+           bundle exec rails db:create RAILS_ENV=development
+           bundle exec rails db:schema:load
