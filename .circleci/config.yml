@@ -2,30 +2,35 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/ruby:2.6.3-node-browsers
-    working_directory: ~/repo
+    - image: circleci/ruby:2.6.3-node-browsers
+    - image: circleci/postgres
+
+    working_directory: ~/rails-blog
+
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            - v1-dependencies-
-      - run:
-          name: install gem
-          command: |
-            gem install bundler:2.1.4
-      - run:
-          name: install dependencies
-          command: |
-            bundle install --jobs=4 --retry=3 --path vendor/bundle
-      - save_cache:
-          paths:
-            - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-      - run: yarn install --check-files
-      - run: bundle exec rake db:create
-      - run: bundle exec rake db:schema:load
-      - run:
-          name: run tests
-          command: |
-            DISABLE_SPRING=true bundle exec rails test
+    - checkout
+
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "Gemfile.lock" }}
+        - v1-dependencies-
+
+    - run:
+        name: install dependencies
+        command: |
+          gem install bundler -v 2.0.2
+          bundle install --jobs=4 --retry=3 --path vendor/bundle
+    - save_cache:
+        paths:
+        - ./vendor/bundle
+        key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
+    # Database setup
+    - run: mv ./config/database.yml.ci ./config/database.yml
+
+    # Database setup
+    - run:
+        name: Databasesetup
+        command: |
+           bundle exec rake db:create
+           bundle exec rake db:schema:load
