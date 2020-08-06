@@ -32,8 +32,13 @@ jobs:
 
     # Database setup
     - run:
-        name: Databasesetup
+        name: Database setup
         command: |
            yarn install --check-files
            bundle exec rake db:create RAILS_ENV=test
            bundle exec rake db:migrate RAILS_ENV=test
+    # Run test
+    - run:
+      name: Run test
+      command: bundle exec rails test
+
