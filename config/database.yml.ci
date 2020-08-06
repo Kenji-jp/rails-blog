@@ -1,0 +1,7 @@
+test:
+  encoding: utf8
+  pool: 5
+  username: 'postgres'
+  port: 3306
+  host: '127.0.0.1'
+  database: rails_blog_test
