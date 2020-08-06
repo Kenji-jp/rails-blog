@@ -39,6 +39,6 @@ jobs:
            bundle exec rake db:migrate RAILS_ENV=test
     # Run test
     - run:
-      name: Run test
-      command: bundle exec rails test
+        name: Run test
+        command: bundle exec rails test
 
