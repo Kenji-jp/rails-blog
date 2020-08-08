@@ -31,7 +31,6 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference('Category.count') do
       post categories_url, params: { category: { name: "Travel" } }
     end
-
     assert_redirected_to categories_url
   end
 

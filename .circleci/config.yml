@@ -1,0 +1,52 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/ruby:2.6.3-node-browsers
+    - image: circleci/postgres
+      environment:
+      - POSTGRES_PASSWORD: 'postgres'
+
+    working_directory: ~/rails-blog
+
+    steps:
+    - checkout
+
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "Gemfile.lock" }}
+        - v1-dependencies-
+
+    - run:
+        name: install dependencies
+        command: |
+          gem install bundler -v 2.0.2
+          bundle install --jobs=4 --retry=3 --path vendor/bundle
+    - save_cache:
+        paths:
+        - ./vendor/bundle
+        key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
+    # Database setup
+    - run: mv ./config/database.yml.ci ./config/database.yml
+
+    # Database setup
+    - run:
+        name: Database setup
+        command: |
+           yarn install --check-files
+           bundle exec rake db:create RAILS_ENV=test
+           bundle exec rake db:migrate RAILS_ENV=test
+    # Run test
+    - run:
+        name: Run test
+        command: bundle exec rails test
+
+    # deploy
+    - deploy:
+       name: Deploy Master to Heroku
+       command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+          fi
+

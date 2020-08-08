@@ -1,0 +1,8 @@
+test:
+  adapter: postgresql
+  encoding: unicode
+  host: '127.0.0.1'
+  username: 'postgres'
+  pool: 5
+  database: rails_blog_test
+
